@@ -1,0 +1,206 @@
+{% extends "users/base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+<!-- <div class="card text-center">
+  <div class="bg-image hover-overlay ripple" data-mdb-ripple-color="light">
+    <img src="https://mdbootstrap.com/img/new/standard/nature/111.jpg" class="img-fluid" />
+    <a href="#!">
+      <div class="mask" style="background-color: rgba(251, 251, 251, 0.15);"></div>
+    </a>
+  </div>
+  <div class="card-body">
+    <h5 class="card-title">Card title</h5>
+    <p class="card-text">
+      Some quick example text to build on the card title and make up the bulk of the
+      card's content.
+    </p>
+    <a href="#!" class="btn btn-primary">Button</a>
+  </div>
+</div>
+<br/>
+<div class="container">
+  <h3> Posts </h3>
+</div> -->
+<div class="container">
+    <div id="content" class="content p-0">
+        <div class="profile-header">
+            <div class="profile-header-cover"></div>
+            <div class="profile-header-content">
+                <div class="profile-header-img mb-4">
+                    <img src="https://bootdey.com/img/Content/avatar/avatar7.png" class="mb-4" alt="" />
+                </div>
+
+                <div class="profile-header-info">
+                    <h4 class="m-t-sm" style="color: aliceblue;">{{ user.fullname }}</h4>
+                    <p class="m-b-sm">{{ user.email }}</p>
+                </div>
+            </div>
+
+            <ul class="profile-header-tab nav nav-tabs">
+                <li class="nav-item"><a href="#profile-friends" class="nav-link active show" data-toggle="tab"
+                        aria-selected="true">FRIENDS</a></li>
+                <li class="nav-item"><a href="#profile-post" class="nav-link" data-toggle="tab"
+                        aria-selected="false">POSTS</a></li>
+                <li class="nav-item"><a href="#profile-requests" class="nav-link" data-toggle="tab"
+                        aria-selected="false">FRIEND REQUESTS</a></li>
+            </ul>
+        </div>
+
+        <div class="profile-container">
+            <div class="row row-space-20">
+                <div class="col-md-8">
+                    <div class="tab-content p-0">
+
+                        <div class="tab-pane fade active show" id="profile-friends">
+                            <div class="m-b-10"><b>Friend List ({{ friends|length }})</b></div>
+
+                            <ul class="friend-list clearfix">
+                                {% for friend in friends %}
+                                <li>
+                                    <a href="#">
+                                        <div class="friend-img"><img
+                                                src="https://bootdey.com/img/Content/avatar/avatar2.png" alt="" /></div>
+                                        <div class="friend-info">
+                                            <div class="row">
+                                                <div class="col-sm">
+                                                    <h4>{{ friend.fullname }}</h4>
+                                                </div>
+                                                <div class="col-sm ">
+                                                    <div class="float-sm-right">
+                                                        <form action="{% url 'remove-friend' %}" method="POST">
+                                                            <input type="hidden" name="friend_id"
+                                                                value="{{ friend.id }}" />
+                                                            <button type="submit" class="btn btn-danger"
+                                                                data-toggle="modal">Remove</button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                    </a>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="tab-pane fade active " id="profile-post">
+                            <div class="m-b-10"><b>Posts List ({{ posts|length }})</b></div>
+                            <ul class="friend-list clearfix">
+                                {% for post in posts %}
+                                <article class="media content-section">
+                                    <div class="media-body">
+
+                                        <div class="article-metadata">
+                                            <a class="mr-2" href="#">{{ post.user.fullname }}</a>
+                                            <small class="text-muted">{{ post.created_at }}</small>
+                                            <div class="float-sm-right">
+                                                <div class="dropdown" style="height: 100%;">
+                                                    <button class="btn btn-light btn-block dropdown-toggle"
+                                                        type="button" id="dropdownMenuButton" data-toggle="dropdown"
+                                                        aria-haspopup="true" aria-expanded="false">
+                                                    </button>
+                                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                        <form action="{% url 'remove-post' %}" method="POST">
+                                                            <input type="hidden" name="post_id" value="{{ post.id }}" />
+                                                            <button type="submit" class="dropdown-item">Delete Post</a>
+
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <h2><a class="article-title" href="#">{{ post.title }}</a></h2>
+                                        <p class="article-content">{{ post.body }}</p>
+                                        <img class="img-fluid" src="{{ post.image.url }}" alt="{{ post.title }}">
+                                    </div>
+                                </article>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="tab-pane fade active" id="profile-requests">
+
+                            <div class="m-b-10"><b>Friend Request List </b></div>
+
+                            <ul class="friend-list clearfix">
+                                {% for friend in friendrequest %}
+                                {% if friend.is_active %}
+                                <li>
+                                    <a href="#">
+                                        <div class="friend-img"><img
+                                                src="https://bootdey.com/img/Content/avatar/avatar2.png" alt="" /></div>
+                                        <div class="friend-info">
+                                            <div class="row">
+                                                <div class="col">
+                                                    <h4>{{ friend.sender.fullname }}</h4>
+                                                </div>
+                                                <div class="col">
+                                                    <small>
+                                                        <form action="{% url 'accept-friend-request' %}" method="POST">
+                                                            <input type="hidden" name="friendrequest_id"
+                                                                value="{{ friend.sender.id }}" />
+                                                            <button type="submit" class="btn btn-success"
+                                                                data-toggle="modal">Accept</button>
+                                                        </form>
+                                                    </small>
+                                                    <div class="float-sm-right">
+                                                        <form action="{% url 'decline-friend-request' %}" method="POST">
+                                                            <input type="hidden" name="friendrequest_id"
+                                                                value="{{ friend.sender.id }}" />
+                                                            <button type="submit" class="btn btn-danger"
+                                                                data-toggle="modal">Decline</button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                    </a>
+                                </li>
+                                {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 hidden-xs hidden-sm">
+                    <ul class="profile-info-list">
+                        <li class="title">PERSONAL INFORMATION</li>
+                        <li>
+                            <div class="field">Occupation:</div>
+                            <div class="value">{{ user.occupation }}</div>
+                        </li>
+                        <li>
+                            <div class="field">Date of Birth:</div>
+                            <div class="value">{{ user.dob }}</div>
+                        </li>
+                        <li>
+                            <div class="field">Address:</div>
+                            <div class="value">
+                                <address class="m-b-0">
+                                    {{ user.address }}
+                                </address>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="field">Phone No.:</div>
+                            <div class="value">
+                                {{ user.phone }}
+                            </div>
+                        </li>
+                        <li class="title">FRIEND LIST ({{ friends|length }})</li>
+                        <li class="img-list">
+                            {% for friend in friends %}
+                            <a href="#" class="m-b-5"><img src="https://bootdey.com/img/Content/avatar/avatar2.png"
+                                    alt="" /></a>
+                            {% endfor %}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
